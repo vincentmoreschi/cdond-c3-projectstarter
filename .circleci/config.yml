@@ -1,7 +1,7 @@
 version: 2.1
 
 commands:
-  destroy-environment:
+  destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     steps:
       - run:
@@ -168,7 +168,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - command: destroy_environment
+      - destroy_environment
    
 workflows:
   default:
