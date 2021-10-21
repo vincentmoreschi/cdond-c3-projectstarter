@@ -168,7 +168,7 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Project,Values=udacity" \
             --output text " >> .circleci/ansible/inventory.txt
-             
+            cat  project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -228,8 +228,10 @@ jobs:
         - run:
             name: Install dependencies
             command: |
-              yum update
-              yum install python ansible nodejs npm awscli -y
+              yum update -y
+              yum install epel-release -y
+              yum install npm nodejs -y
+              yum install python ansible awscli -y
         - run:
             name: Get backend url
             command: |
