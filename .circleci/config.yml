@@ -174,111 +174,111 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy_environment
-configure-infrastructure:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-        fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible 
-            
-      - run:
-          name: Configure server
-          command: |
+  configure-infrastructure:
+      docker:
+        - image: python:3.7-alpine3.11
+      steps:
+        - checkout
+        - add_ssh_keys:
+          fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
+        - attach_workspace:
+            at: ~/
+        - run:
+            name: Install dependencies
+            command: |
+              apk add --update ansible 
+              
+        - run:
+            name: Configure server
+            command: |
+                cd .circleci/ansible
+                ansible-playbook -i inventory.txt configure-server.yml
+              
+        - destroy_environment     
+  run-migrations:
+      docker:
+      - image: circleci/node:13.8.0
+      steps:
+        - checkout
+        - restore_cache:
+            keys: [backend-build] 
+        - run:
+            name: Run migrations
+            command: |
+              cd backend
+              npm install
+              # Run and sve the migration output
+              npm run migrations > migrations_dump.txt
+              
+        - run:
+            name: Send migration results to memstash
+            command: |
+              if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+              then
+                curl -H "Content-Type: text/plain" -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              fi
+              
+        - destroy_environment
+        - revert-migrations        
+  deploy-frontend:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout 
+        - run:
+            name: Install dependencies
+            command: |
+              yum install python ansible node npm awscli -y
+        - run:
+            name: Get backend url
+            command: |
+              export BACKEND_IP=$(echo "aws ec2 describe-instances \
+              \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Project,Values=udacity" \
+              --output text " >> .circleci/ansible/inventory.txt
+              )
+              export API_URL="http://${BACKEND_IP}:3030"
+              echo "API_URL = ${API_URL}"
+              echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+              cat frontend/.env
+        - run:
+            name: Deploy frontend objects
+            command: |
+              cd frontend
+              npm install
+              npm run build
+              tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+              aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+        - destroy_environment
+        - revert-migrations   
+  deploy-backend:
+      docker:
+        - image: python:3.7-alpine3.11
+      steps:
+        - checkout
+        - add_ssh_keys:
+            fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
+        - run:
+            name: Install dependencies
+            command: |
+              apk add --update ansible 
+              yum install tar gzip node npm -y
+        - run:
+            name: Deploy backend
+            command: |
+              cd backend
+              npm i
+              npm run build
+              cd ..
+              # Zip the directory
+              tar -C backend -czvf artifact.tar.gz .
               cd .circleci/ansible
-              ansible-playbook -i inventory.txt configure-server.yml
-            
-      - destroy_environment     
-run-migrations:
-    docker:
-    - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build] 
-      - run:
-          name: Run migrations
-          command: |
-             cd backend
-             npm install
-             # Run and sve the migration output
-             npm run migrations > migrations_dump.txt
-            
-      - run:
-          name: Send migration results to memstash
-          command: |
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-            then
-              curl -H "Content-Type: text/plain" -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-            fi
-            
-      - destroy_environment
-      - revert-migrations        
-deploy-frontend:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout 
-      - run:
-          name: Install dependencies
-          command: |
-            yum install python ansible node npm awscli -y
-      - run:
-          name: Get backend url
-          command: |
-            export BACKEND_IP=$(echo "aws ec2 describe-instances \
-            \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:Project,Values=udacity" \
-            --output text " >> .circleci/ansible/inventory.txt
-             )
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env
-      - run:
-          name: Deploy frontend objects
-          command: |
-            cd frontend
-            npm install
-            npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - destroy_environment
-      - revert-migrations   
-deploy-backend:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-        fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible 
-            yum install tar gzip node npm -y
-      - run:
-          name: Deploy backend
-          command: |
-            cd backend
-            npm i
-            npm run build
-            cd ..
-            # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy_environment
-      - revert-migrations   
+              echo "Contents  of the inventory.txt file is -------"
+              cat inventory.txt
+              ansible-playbook -i inventory.txt deploy-backend.yml
+        - destroy_environment
+        - revert-migrations   
 workflows:
   default:
     jobs:
