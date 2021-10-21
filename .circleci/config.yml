@@ -228,15 +228,16 @@ jobs:
         - run:
             name: Install dependencies
             command: |
+              yum update
               yum install python ansible nodejs npm awscli -y
         - run:
             name: Get backend url
             command: |
-              export BACKEND_IP=$(echo "aws ec2 describe-instances \
+              export BACKEND_IP=$(aws ec2 describe-instances \
               \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:Project,Values=udacity" \
-              --output text " 
+              --output text
               )
               export API_URL="http://${BACKEND_IP}:3030"
               echo "API_URL = ${API_URL}"
@@ -268,7 +269,7 @@ jobs:
             name: Deploy backend
             command: |
               cd backend
-              npm i
+              npm install
               npm run build
               cd ..
               # Zip the directory
