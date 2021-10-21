@@ -228,7 +228,7 @@ jobs:
         - run:
             name: Install dependencies
             command: |
-              yum install python ansible node npm awscli -y
+              yum install python ansible nodejs npm awscli -y
         - run:
             name: Get backend url
             command: |
@@ -236,7 +236,7 @@ jobs:
               \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:Project,Values=udacity" \
-              --output text " >> .circleci/ansible/inventory.txt
+              --output text " 
               )
               export API_URL="http://${BACKEND_IP}:3030"
               echo "API_URL = ${API_URL}"
