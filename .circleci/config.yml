@@ -166,7 +166,7 @@ jobs:
            aws ec2 describe-instances \
             \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:Project,Values=udacity" \
+            --filters "Name=tag:Project,Values=udapeople" \
             --output text >> .circleci/ansible/inventory.txt
             cat  .circleci/ansible/inventory.txt
       - persist_to_workspace:
@@ -222,7 +222,7 @@ jobs:
         - revert-migrations        
   deploy-frontend:
       docker:
-        - image: amazon/aws-cli
+        - image: circleci/node:13.8.0
       steps:
         - checkout 
         - run:
@@ -237,7 +237,7 @@ jobs:
               export BACKEND_IP=$(aws ec2 describe-instances \
               \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Project,Values=udacity" \
+              --filters "Name=tag:Project,Values=udapeople" \
               --output text
               )
               export API_URL="http://${BACKEND_IP}:3030"
