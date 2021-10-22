@@ -10,6 +10,7 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws s3api delete-bucket --bucket udapeople-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.  
@@ -237,7 +238,7 @@ jobs:
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
               . ~/.nvm/nvm.sh
               nvm install node
-              nvm install npm
+              
 
 
         - run:
