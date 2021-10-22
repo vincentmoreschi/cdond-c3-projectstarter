@@ -230,11 +230,12 @@ jobs:
             name: Install dependencies
             command: |
               
-              yum update -y
-              yum install tar -y
-              yum install gzip -y
-              yum install curl -y
-              yum install python ansible -y
+            
+              apt-get install tar -y
+              apt-get install gzip -y
+              apt-get install curl -y
+              apt-get install python ansible -y
+              apt-get install aws
               # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
               # . ~/.nvm/nvm.sh
               # nvm install node
