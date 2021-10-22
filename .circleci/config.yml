@@ -19,7 +19,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            if((curl -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request GET https://api.memstash.io/values/ ));
+            if((curl -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request GET https://api.memstash.io/values/ ))
             then
               SUCCESS = 1
             fi
@@ -223,23 +223,23 @@ jobs:
         - revert-migrations        
   deploy-frontend:
       docker:
-        - image: circleci/node:13.8.0
+        - image: amazon/aws-cli
       steps:
         - checkout 
         - run:
             name: Install dependencies
             command: |
               
-            
-              apt-get install tar -y
-              apt-get install gzip -y
-              apt-get install curl -y
-              apt-get install python ansible -y
-              apt-get install aws
-              # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-              # . ~/.nvm/nvm.sh
-              # nvm install node
-              
+              yum update -y
+              yum install tar -y
+              yum install gzip -y
+              yum install curl -y
+              yum install python ansible -y
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+              . ~/.nvm/nvm.sh
+              nvm install node
+              nvm install npm
+              cd ..
 
 
         - run:
