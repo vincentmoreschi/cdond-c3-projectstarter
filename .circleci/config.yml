@@ -173,7 +173,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - project/.circleci/ansible/
       - destroy_environment
   configure-infrastructure:
       docker:
@@ -223,7 +223,7 @@ jobs:
         - revert-migrations        
   deploy-frontend:
       docker:
-        - image: amazon/aws-cli
+        - image: amazon/lambda
       steps:
         - checkout 
         - run:
