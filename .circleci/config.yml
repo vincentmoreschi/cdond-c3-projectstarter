@@ -223,7 +223,7 @@ jobs:
         - revert-migrations        
   deploy-frontend:
       docker:
-        - image: amazon/lambda
+        - image: amazon/aws-lambda-nodejs
       steps:
         - checkout 
         - run:
