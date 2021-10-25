@@ -20,10 +20,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            if((curl -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}));
-            then
-              SUCCESS = 1
-            fi
+            SUCCESS=$(curl -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if(( $SUCCESS == 1 )); 
             then
               cd ~/project/backend
@@ -312,19 +309,14 @@ jobs:
           command: |
             yum install tar gzip nodejs npm curl awscli -y
       - run:
-          name: Get backend url
+          name: Backend smoke test.
           command: |
               export BACKEND_IP=$(aws ec2 describe-instances \
               \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:project,Values=udapeople" \
               --output text
-              )
-
-      - run:
-          name: Backend smoke test.
-          command: |
-              # Fetch and prepare the BACKEND_IP env var
+              )r
               export API_URL="http://${BACKEND_IP}:3030"
               echo "${API_URL}"
               if curl "${API_URL}/api/status" | grep "ok"
