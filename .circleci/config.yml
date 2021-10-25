@@ -10,6 +10,7 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws s3api delete-bucket --bucket udapeople-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
 
   revert-migrations:
@@ -19,7 +20,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            if((curl -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request GET https://api.memstash.io/values/ ));
+            if((curl -H "token: 9b8e0f63-6af0-4ca0-bd2f-f6f0fd4226fa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}));
             then
               SUCCESS = 1
             fi
@@ -280,6 +281,12 @@ jobs:
             command: |
               apk add --update ansible 
               apk add tar gzip nodejs npm 
+              RUN apk update \
+              && apk --no-cache add curl \
+              && apk --no-cache add unzip \
+              && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+              && unzip awscliv2.zip \
+              && ./aws/install   
         - run:
             name: Deploy backend
             command: |
@@ -297,13 +304,13 @@ jobs:
         - revert-migrations
   smoke-test:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add tar gzip nodejs npm curl awscli
+            yum install tar gzip nodejs npm curl awscli -y
       - run:
           name: Get backend url
           command: |
