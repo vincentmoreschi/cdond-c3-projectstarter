@@ -288,7 +288,7 @@ jobs:
         - run:
             name: Deploy backend
             command: |
-              /usr/local/bin/aws ec2 describe-instances \
+              aws ec2 describe-instances \
               \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:project,Values=udapeople" \
