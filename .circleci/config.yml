@@ -303,7 +303,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add tar gzip nodejs npm 
+            apk add tar gzip nodejs npm curl awscli
       - run:
           name: Get backend url
           command: |
