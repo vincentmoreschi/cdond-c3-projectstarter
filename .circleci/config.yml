@@ -170,8 +170,8 @@ jobs:
             cat  .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
-          paths:
-            - project/.circleci/ansible/
+          paths: 
+          - project/.circleci/ansible
       - destroy_environment
   configure-infrastructure:
       docker:
@@ -366,6 +366,7 @@ workflows:
       - build-frontend
       - build-backend
       - deploy-infrastructure
+      - cloudfront-update
       - run-migrations:
           requires: [configure-infrastructure]
       - configure-infrastructure:
