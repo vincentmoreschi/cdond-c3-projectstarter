@@ -363,3 +363,5 @@ workflows:
           requires: [test-frontend]
       - scan-backend:
           requires: [test-backend]
+      - smoke-test:
+          requires: [deploy-backed, deploy-frontend]
