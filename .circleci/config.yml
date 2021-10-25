@@ -282,7 +282,7 @@ jobs:
               yum install curl -y
               yum install awscli -y
               yum install python3 -y
-              pip3 install ansible -y
+              pip3 install ansible
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
               . ~/.nvm/nvm.sh
               nvm install node
