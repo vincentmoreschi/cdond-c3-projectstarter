@@ -169,7 +169,7 @@ jobs:
             --output text >> .circleci/ansible/inventory.txt
             cat  .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: cdond-c3-projectstarter/
+          root: /root/project/
           paths: 
             - .circleci/ansible/
 
