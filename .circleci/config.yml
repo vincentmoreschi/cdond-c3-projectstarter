@@ -182,7 +182,7 @@ jobs:
         - add_ssh_keys:
             fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
         - attach_workspace:
-            at: /cdond-c3-projectstarter/
+            at: ~/
         - run:
             name: Install dependencies
             command: |
@@ -190,8 +190,7 @@ jobs:
               
         - run:
             name: Configure server
-            command: |
-                cd .circleci/ansible
+            command: |f
                 ansible-playbook -i inventory.txt configure-server.yml
               
         - destroy_environment     
