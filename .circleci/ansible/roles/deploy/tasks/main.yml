@@ -1,15 +1,15 @@
 ---
-
-- name: Extract foo.tgz into /var/lib/foo
-  ansible.builtin.unarchive:
-    src: artifact.tar.gz
-    dest: /
 - name: "install dependencies."
   become: true
   apt:
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
+- name: Extract artifact.tar.gz
+  ansible.builtin.unarchive:
+    src: artifact.tar.gz
+    dest: /
+
 - name: "install pm2"
   become: true
   npm:
