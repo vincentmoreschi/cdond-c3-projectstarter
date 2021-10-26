@@ -1,8 +1,5 @@
 ---
-- name: "upgrade packages."
-  become: true
-  apt:
-    upgrade: "yes"
+
 - name: Extract foo.tgz into /var/lib/foo
   ansible.builtin.unarchive:
     src: artifact.tar.gz
