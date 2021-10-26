@@ -169,9 +169,9 @@ jobs:
             --output text >> .circleci/ansible/inventory.txt
             cat  .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: ~/
+          root: ~/cdond-c3-projectstarter
           paths: 
-          - .circleci/
+          - /cdond-c3-projectstarter/.circleci/ansible/
       - destroy_environment
   configure-infrastructure:
       docker:
@@ -181,7 +181,7 @@ jobs:
         - add_ssh_keys:
             fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
         - attach_workspace:
-            at: project/
+            at: /cdond-c3-projectstarter/
         - run:
             name: Install dependencies
             command: |
