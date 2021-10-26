@@ -190,16 +190,10 @@ jobs:
             command: |
               apk update
               apk add --update ansible 
-              apk add --upgrade aws-cli
+          # apk add --upgrade aws-cli
         - run:
             name: Configure server
             command: |
-              aws ec2 describe-instances \
-              \
-                --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                --filters "Name=tag:project,Values=udapeople" \
-                --output text >> .circleci/ansible/inventory.txt
-                cat  .circleci/ansible/inventory.txt
                 cd .circleci/ansible/
                 ansible-playbook -i inventory.txt configure-server.yml
               
