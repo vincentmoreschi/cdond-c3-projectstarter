@@ -270,22 +270,35 @@ jobs:
         - revert-migrations   
   deploy-backend:
       docker:
-        - image: python:3.7-alpine3.11
+        - image: amazon/aws-lambda-nodejs
       steps:
         - checkout
         - add_ssh_keys:
             fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
-        - attach_workspace:
-             at: /root/project/
+        # - attach_workspace:
+        #     at: project/
         - run:
             name: Install dependencies
             command: |
-              apk update
-              apk add --update ansible 
-
+              yum update -y
+              yum install tar -y
+              yum install gzip -y
+              yum install curl -y
+              yum install awscli -y
+              yum install python3 -y
+              pip3 install ansible
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+              . ~/.nvm/nvm.sh
+              nvm install node
         - run:
             name: Deploy backend
             command: |
+              aws ec2 describe-instances \
+              \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople" \
+              --output text >> .circleci/ansible/inventory.txt
+              cat  .circleci/ansible/inventory.txt
               cd backend
               npm install
               npm run build
