@@ -286,7 +286,7 @@ jobs:
               apk add gzip 
               apk add curl
               apk add nodejs
-              apk add npm
+              apk add --update npm
         - run:
             name: Deploy backend
             command: |
