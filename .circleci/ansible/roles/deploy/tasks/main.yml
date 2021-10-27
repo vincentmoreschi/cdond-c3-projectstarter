@@ -6,6 +6,7 @@
     state: latest
     update_cache: yes
 - name: Extract artifact.tar.gz
+  become: true
   ansible.builtin.unarchive:
     src: /root/project/artifact.tar.gz
     dest: /
