@@ -180,7 +180,7 @@ jobs:
       steps:
         - checkout
         - add_ssh_keys:
-            fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
+            fingerprints: ["14:8a:91:8a:36:3e:0f:9d:de:9a:26:d9:43:0f:c0:79:a1:b3:af:85"]
         - attach_workspace:
             at: /root/project/
             
@@ -244,6 +244,7 @@ jobs:
               cd ..
 
 
+
         - run:
             name: Get backend url
             command: |
@@ -273,7 +274,7 @@ jobs:
       steps:
         - checkout
         - add_ssh_keys:
-            fingerprints: ["2c:35:17:20:3e:af:38:8a:3b:f9:2d:fe:7e:51:c6:07"]
+            fingerprints: ["14:8a:91:8a:36:3e:0f:9d:de:9a:26:d9:43:0f:c0:79:a1:b3:af:85"]
         - attach_workspace:
             at: /root/project/
         - run:
